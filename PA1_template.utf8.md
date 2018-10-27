@@ -151,6 +151,7 @@ for(i in seq(1:nrow(missingKeys))) {
     replacementValues[i] <- imputeValues[imputeValues$weekday == missingKeys[i,"weekday"]$weekday & 
                                          imputeValues$interval == missingKeys[i,"interval"]$interval, ]$intervalMean
 }
+
 # loop over the missing values and replace NA with the imputed values
 a <- replace(x = activityData$steps, list = missingIndex, replacementValues)
 activityData$newsteps <- replace(x = activityData$steps, list = missingIndex, as.integer(replacementValues))
@@ -217,10 +218,18 @@ cat(c('Difference between median using imputed values and original median is: ',
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
+### 1. Create a new factor variable in the dataset with two levels – “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.
+
+
 
 ```r
 activityData$weekend <- factor(activityData$weekday == 'Sat' | activityData$weekday == 'Sun', labels = c('weekday','weekend'))
+```
 
+### 2. Make a panel plot containing a time series plot  of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all weekday days or weekend days (y-axis). See the README file in the GitHub repository to see an example of what this plot should look like using simulated data.
+
+
+```r
 intervalStats <- activityData %>% 
     group_by(weekend, interval) %>%
     summarise(intervalMean = mean(steps, na.rm = T))
