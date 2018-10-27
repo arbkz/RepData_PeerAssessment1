@@ -25,13 +25,14 @@ activityData$weekday <- wday(activityData$date, label = T)
 ```r
 dailyStats <- activityData %>% 
                 group_by(date) %>%
-                    summarise(dayTotal = sum(steps, na.rm = T))
+                    filter(!is.na(steps)) %>%
+                        summarise(dayTotal = sum(steps, na.rm = T))
 
 cat(c('Total number of steps per day: ', dailyStats$dayTotal))
 ```
 
 ```
-## Total number of steps per day:  0 126 11352 12116 13294 15420 11015 0 12811 9900 10304 17382 12426 15098 10139 15084 13452 10056 11829 10395 8821 13460 8918 8355 2492 6778 10119 11458 5018 9819 15414 0 10600 10571 0 10439 8334 12883 3219 0 0 12608 10765 7336 0 41 5441 14339 15110 8841 4472 12787 20427 21194 14478 11834 11162 13646 10183 7047 0
+## Total number of steps per day:  126 11352 12116 13294 15420 11015 12811 9900 10304 17382 12426 15098 10139 15084 13452 10056 11829 10395 8821 13460 8918 8355 2492 6778 10119 11458 5018 9819 15414 10600 10571 10439 8334 12883 3219 12608 10765 7336 41 5441 14339 15110 8841 4472 12787 20427 21194 14478 11834 11162 13646 10183 7047
 ```
 
 ### 2. Make a histogram of the total number of steps taken each day
@@ -58,7 +59,7 @@ cat(c('Daily Mean is: ', dayMean))
 ```
 
 ```
-## Daily Mean is:  9354.22950819672
+## Daily Mean is:  10766.1886792453
 ```
 
 ```r
@@ -66,7 +67,7 @@ cat(c('Daily Median is: ', dayMedian))
 ```
 
 ```
-## Daily Median is:  10395
+## Daily Median is:  10765
 ```
 
 
@@ -79,7 +80,8 @@ cat(c('Daily Median is: ', dayMedian))
 ```r
 intervalStats <- activityData %>% 
     group_by(interval) %>%
-    summarise(intervalMean = mean(steps, na.rm = T))
+        filter(!is.na(steps)) %>%
+            summarise(intervalMean = mean(steps, na.rm = T))
 
 ggplot(data = intervalStats, aes(x = interval, y = intervalMean)) + 
     geom_line() +
@@ -135,7 +137,8 @@ The strategy for imputing the missing data will be to substitute NA values with 
 ```r
 imputeValues <- activityData %>% 
     group_by(weekday, interval) %>%
-    summarise(intervalMean = mean(steps, na.rm = T))
+        filter(!is.na(steps)) %>%
+            summarise(intervalMean = mean(steps, na.rm = T))
 
 # find indices of the missing values
 missingIndex <- which(is.na(activityData$steps))
@@ -163,7 +166,7 @@ activityData$newsteps <- replace(x = activityData$steps, list = missingIndex, as
 ```r
 dailyStats2 <- activityData %>% 
     group_by(date) %>%
-    summarise(dayTotal = sum(newsteps, na.rm = T))
+            summarise(dayTotal = sum(newsteps, na.rm = T))
 
 
 # Find the mean and median number of steps taken per day
@@ -203,7 +206,7 @@ cat(c('Difference between mean using imputed values and original mean is: ', day
 ```
 
 ```
-## Difference between mean using imputed values and original mean is:  1455.55737704918
+## Difference between mean using imputed values and original mean is:  43.598206000619
 ```
 
 ```r
@@ -211,7 +214,7 @@ cat(c('Difference between median using imputed values and original median is: ',
 ```
 
 ```
-## Difference between median using imputed values and original median is:  620
+## Difference between median using imputed values and original median is:  250
 ```
 
    
@@ -232,7 +235,7 @@ activityData$weekend <- factor(activityData$weekday == 'Sat' | activityData$week
 ```r
 intervalStats <- activityData %>% 
     group_by(weekend, interval) %>%
-    summarise(intervalMean = mean(steps, na.rm = T))
+            summarise(intervalMean = mean(newsteps, na.rm = T))
 
 #plot average steps against time interval
 

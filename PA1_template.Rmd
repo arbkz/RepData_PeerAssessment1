@@ -35,7 +35,8 @@ activityData$weekday <- wday(activityData$date, label = T)
 
 dailyStats <- activityData %>% 
                 group_by(date) %>%
-                    summarise(dayTotal = sum(steps, na.rm = T))
+                    filter(!is.na(steps)) %>%
+                        summarise(dayTotal = sum(steps, na.rm = T))
 
 cat(c('Total number of steps per day: ', dailyStats$dayTotal))
 
@@ -75,7 +76,8 @@ cat(c('Daily Median is: ', dayMedian))
 
 intervalStats <- activityData %>% 
     group_by(interval) %>%
-    summarise(intervalMean = mean(steps, na.rm = T))
+        filter(!is.na(steps)) %>%
+            summarise(intervalMean = mean(steps, na.rm = T))
 
 ggplot(data = intervalStats, aes(x = interval, y = intervalMean)) + 
     geom_line() +
@@ -122,7 +124,8 @@ The strategy for imputing the missing data will be to substitute NA values with 
 
 imputeValues <- activityData %>% 
     group_by(weekday, interval) %>%
-    summarise(intervalMean = mean(steps, na.rm = T))
+        filter(!is.na(steps)) %>%
+            summarise(intervalMean = mean(steps, na.rm = T))
 
 # find indices of the missing values
 missingIndex <- which(is.na(activityData$steps))
@@ -149,9 +152,10 @@ activityData$newsteps <- replace(x = activityData$steps, list = missingIndex, as
 ### 4. Make a histogram of the total number of steps taken each day and Calculate and report the mean and median total number of steps taken per day. Do these values differ from the estimates from the first part of the assignment? What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
 ``` {r, new_total_steps_histogram}
+
 dailyStats2 <- activityData %>% 
     group_by(date) %>%
-    summarise(dayTotal = sum(newsteps, na.rm = T))
+            summarise(dayTotal = sum(newsteps, na.rm = T))
 
 
 # Find the mean and median number of steps taken per day
@@ -193,7 +197,7 @@ activityData$weekend <- factor(activityData$weekday == 'Sat' | activityData$week
 ``` {r, avg_steps_weekdays_vs_weekends}
 intervalStats <- activityData %>% 
     group_by(weekend, interval) %>%
-    summarise(intervalMean = mean(steps, na.rm = T))
+            summarise(intervalMean = mean(newsteps, na.rm = T))
 
 #plot average steps against time interval
 
