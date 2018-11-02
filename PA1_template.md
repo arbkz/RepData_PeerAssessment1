@@ -7,7 +7,8 @@ output:
     keep_md: yes
 keepmd: true
 ---
-
+# Reproducible Research Assignment 1
+-------------------------------------
 
 
 ## Loading and preprocessing the data
